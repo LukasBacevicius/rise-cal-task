@@ -60,7 +60,7 @@ export const useKeyboardNavigation = (
       ref?.current?.removeEventListener("keydown", handleKeyDown);
       ref?.current?.removeEventListener("mouseover", handleMouseover);
     };
-  }, []);
+  }, [selectedIndex]);
 
   return [ref, selectedIndex];
 };
