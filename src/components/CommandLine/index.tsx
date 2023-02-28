@@ -1,12 +1,8 @@
 import { Pill } from "components/Pill";
 import styled from "styled-components";
-import {
-  Command,
-  CommandGroup,
-  commands,
-} from "components/CommandLine/commands";
+import { Command, CommandGroup, commands } from "utils/commands";
 import { Heading, Text, VARIANT } from "components/Typography";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useKeyboardNavigation } from "hooks/useKeyboardNavigation";
 
 const Root = styled.div`
@@ -56,7 +52,7 @@ const Input = styled.input`
 `;
 
 const CommandListWrapper = styled.div`
-  max-height: 299px;
+  max-height: 290px;
   overflow: auto;
   padding: 6px 6px;
   border-top: 0.5px solid rgba(var(--color-gray-0), 0.1);
@@ -145,6 +141,7 @@ const filterCommands = <T extends CommandGroup>(
 
 export const CommandLine: React.FC = () => {
   const [query, setQuery] = useState("");
+  let currentIndex = 0;
 
   const items = useMemo(() => {
     if (!query) return commands;
@@ -152,21 +149,12 @@ export const CommandLine: React.FC = () => {
     return filterCommands(commands, query);
   }, [query]);
 
-  const handleCommandSelected = (command: any) => {
-    alert(command.label);
-  };
-
-  const selectedIndex = useKeyboardNavigation(
-    items.map((i) => i.children).flat(),
-    handleCommandSelected
+  const [ref, selectedIndex] = useKeyboardNavigation(
+    items.map((i) => i.children).flat()
   );
 
-  useEffect(() => {
-    console.log(selectedIndex);
-  }, [selectedIndex]);
-
   return (
-    <Root>
+    <Root ref={ref}>
       <Wrapper>
         <Top>
           <TargetItems>
@@ -185,37 +173,53 @@ export const CommandLine: React.FC = () => {
         </Top>
         <CommandListWrapper>
           <CommandList selectedIndex={selectedIndex}>
-            {items.map(({ label, children }) => (
-              <>
-                {!!label && !!children.length && (
-                  <CommandGroupHeading>{label}</CommandGroupHeading>
-                )}
-                {children.map((c: Command) => (
-                  <Cmd>
-                    <svg viewBox="0 0 16 16">
-                      <use href={c.icon} />
-                    </svg>
-                    <Text variant={VARIANT.medium}>{c.label}</Text>
-                    <Shortcut>
-                      {c.shortcut.map((s, index) =>
-                        s.split("").map((char) => {
-                          if (index !== 0) {
-                            return (
-                              <>
-                                <Text variant={VARIANT.x_small}>then</Text>
-                                <Char variant={VARIANT.x_small}>{char}</Char>
-                              </>
-                            );
-                          }
+            {items.map(({ label, children }) => {
+              return (
+                <>
+                  {!!label && !!children.length && (
+                    <CommandGroupHeading>{label}</CommandGroupHeading>
+                  )}
+                  {children.map((c: Command) => {
+                    currentIndex += 1;
+                    const key = currentIndex - 1;
 
-                          return <Char variant={VARIANT.x_small}>{char}</Char>;
-                        })
-                      )}
-                    </Shortcut>
-                  </Cmd>
-                ))}
-              </>
-            ))}
+                    return (
+                      <Cmd key={key} data-key={key}>
+                        <svg viewBox="0 0 16 16">
+                          <use href={c.icon} />
+                        </svg>
+                        <Text variant={VARIANT.medium}>{c.label}</Text>
+                        <Shortcut>
+                          {c.shortcutUI.split("+").map((s) => {
+                            return s.split("").map((char, index) => {
+                              if (char === " ") {
+                                return (
+                                  <Text
+                                    key={`${index}_then`}
+                                    variant={VARIANT.x_small}
+                                  >
+                                    then
+                                  </Text>
+                                );
+                              }
+
+                              return (
+                                <Char
+                                  key={`${index}_${char}`}
+                                  variant={VARIANT.x_small}
+                                >
+                                  {char}
+                                </Char>
+                              );
+                            });
+                          })}
+                        </Shortcut>
+                      </Cmd>
+                    );
+                  })}
+                </>
+              );
+            })}
           </CommandList>
         </CommandListWrapper>
       </Wrapper>
