@@ -1,8 +1,8 @@
-import { Pill } from "components/Pill";
-import styled from "styled-components";
-import { Command, CommandGroup, commands } from "utils/commands";
-import { Heading, Text, VARIANT } from "components/Typography";
 import { useMemo, useState } from "react";
+import styled from "styled-components";
+import { SearchInput } from "./SearchInput";
+import { List } from "./List";
+import { CommandGroup, commands } from "utils/commands";
 import { useKeyboardNavigation } from "hooks/useKeyboardNavigation";
 
 const Root = styled.div`
@@ -27,106 +27,6 @@ const Wrapper = styled.div`
   backdrop-filter: blur(50px);
 `;
 
-const Top = styled.div`
-  display: grid;
-`;
-
-const TargetItems = styled.div`
-  display: flex;
-  align-items: flex-start;
-  padding: 16px 16px 0;
-`;
-
-const Input = styled.input`
-  background-color: transparent;
-  border: none;
-  outline: none;
-  font-size: 1.125rem;
-  color: rgb(var(--color-gray-0));
-  caret-color: rgb(var(--color-purple-60));
-  padding: 20px;
-
-  &:placeholder {
-    color: rgba(var(--color-gray-0), 0.5);
-  }
-`;
-
-const CommandListWrapper = styled.div`
-  max-height: 290px;
-  overflow: auto;
-  padding: 6px 6px;
-  border-top: 0.5px solid rgba(var(--color-gray-0), 0.1);
-`;
-
-const CommandList = styled.ul<{ selectedIndex: number }>`
-  display: grid;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-gap: 4px;
-  list-style-type: none;
-
-  & > li:nth-of-type(${(props) => props.selectedIndex + 1}) {
-    svg {
-      color: rgba(var(--color-gray-0), 1);
-    }
-
-    &:after {
-      opacity: 1;
-    }
-  }
-`;
-
-const CommandGroupHeading = styled(Heading)`
-  color: rgba(var(--color-gray-0), 0.5);
-  padding: 6px 12px;
-`;
-
-const Cmd = styled.li`
-  display: grid;
-  padding: 12px 14px;
-  grid-template-columns: 16px 1fr minmax(20px, 72px);
-  grid-gap: 16px;
-  color: rgb(var(--color-gray-0));
-  position: relative;
-  align-items: center;
-
-  &:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(var(--color-gray-0), 0.05);
-    opacity: 0;
-    border-radius: 6px;
-  }
-
-  svg {
-    color: rgba(var(--color-gray-0), 0.6);
-  }
-`;
-
-const Shortcut = styled.div`
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  justify-content: end;
-  color: rgba(var(--color-gray-0), 0.5);
-`;
-
-const Char = styled(Text)`
-  width: 20px;
-  height: 20px;
-  background: rgba(var(--color-gray-0), 0.05);
-  border-radius: 4px;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  color: rgba(var(--color-gray-0), 0.75);
-`;
-
 const filterCommands = <T extends CommandGroup>(
   items: T[],
   query: string
@@ -141,7 +41,6 @@ const filterCommands = <T extends CommandGroup>(
 
 export const CommandLine: React.FC = () => {
   const [query, setQuery] = useState("");
-  let currentIndex = 0;
 
   const items = useMemo(() => {
     if (!query) return commands;
@@ -156,72 +55,8 @@ export const CommandLine: React.FC = () => {
   return (
     <Root ref={ref}>
       <Wrapper>
-        <Top>
-          <TargetItems>
-            <Pill>
-              <strong>Event </strong> - All hands on 15 Jan 2023
-            </Pill>
-          </TargetItems>
-
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Type command…"
-            aria-label="Type command…"
-            autoFocus
-          />
-        </Top>
-        <CommandListWrapper>
-          <CommandList selectedIndex={selectedIndex}>
-            {items.map(({ label, children }) => {
-              return (
-                <>
-                  {!!label && !!children.length && (
-                    <CommandGroupHeading>{label}</CommandGroupHeading>
-                  )}
-                  {children.map((c: Command) => {
-                    currentIndex += 1;
-                    const key = currentIndex - 1;
-
-                    return (
-                      <Cmd key={key} data-key={key}>
-                        <svg viewBox="0 0 16 16">
-                          <use href={c.icon} />
-                        </svg>
-                        <Text variant={VARIANT.medium}>{c.label}</Text>
-                        <Shortcut>
-                          {c.shortcutUI.split("+").map((s) => {
-                            return s.split("").map((char, index) => {
-                              if (char === " ") {
-                                return (
-                                  <Text
-                                    key={`${index}_then`}
-                                    variant={VARIANT.x_small}
-                                  >
-                                    then
-                                  </Text>
-                                );
-                              }
-
-                              return (
-                                <Char
-                                  key={`${index}_${char}`}
-                                  variant={VARIANT.x_small}
-                                >
-                                  {char}
-                                </Char>
-                              );
-                            });
-                          })}
-                        </Shortcut>
-                      </Cmd>
-                    );
-                  })}
-                </>
-              );
-            })}
-          </CommandList>
-        </CommandListWrapper>
+        <SearchInput {...{ query, setQuery }} />
+        <List {...{ selectedIndex, items }} />
       </Wrapper>
     </Root>
   );
