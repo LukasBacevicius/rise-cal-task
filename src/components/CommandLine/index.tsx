@@ -134,7 +134,7 @@ const filterCommands = <T extends CommandGroup>(
   return [...items].map((item) => ({
     ...item,
     children: [...item.children].filter((child) =>
-      child.label.toLowerCase().includes(query)
+      child.label.toLowerCase().includes(query.toLowerCase())
     ),
   }));
 };
