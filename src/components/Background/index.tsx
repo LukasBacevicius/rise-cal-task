@@ -19,13 +19,13 @@ const Box = styled.div<Props>`
 `;
 
 const GreenBox = styled(Box)`
-  background-color: var(--color-green-80);
+  background-color: rgb(var(--color-green-80));
   top: 105px;
   left: 100px;
 `;
 
 const GrayBox = styled(Box)`
-  background-color: var(--color-gray-80);
+  background-color: rgb(var(--color-gray-80));
   bottom: 105px;
   right: 240px;
 `;

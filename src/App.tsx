@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { Background } from "./components/Background";
-import { CommandLine } from "./components/CommandLine";
-import { GlobalStyles } from "./styles/globalStyles";
+import { Background } from "components/Background";
+import { CommandLine } from "components/CommandLine";
+import { GlobalStyles } from "styles/globalStyles";
+import { ReactComponent as SvgSprite } from "icons/sprite.svg";
 
 const Container = styled.div`
   width: 100%;
@@ -21,6 +22,7 @@ function App() {
         <Background />
         <CommandLine />
       </Container>
+      <SvgSprite />
     </>
   );
 }

@@ -2,18 +2,23 @@ import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyles = createGlobalStyle`
     :root {
-        --color-gray-100: #161616;
-        --color-gray-90: #262626;
-        --color-gray-80: #393939; 
-        --color-gray-0: #FFFFFF;
-        
-        --color-green-80: #044317;
-        --color-purple-60: #8A3FFC;
+        --color-gray-100: 22, 22, 22;
+        --color-gray-90: 38, 38, 38;
+        --color-gray-80: 57, 57, 57; 
+        --color-gray-0: 255, 255, 255;
+
+        --color-green-80: 4, 67, 23;
+        --color-purple-60: 138, 63, 252;
+
+        --default-shadow: 0px 16px 70px rgba(0, 0, 0, 0.5);
     }
 
-    html,
+    html * {
+        font-family: Inter, sans-serif;
+        font-size: 16px;
+    }
+    
     body {
-        background-color: var(--color-gray-100);
-        font-famly: Inter, sans-serif;
+        background-color: rgb(var(--color-gray-100));
     }
 `;
